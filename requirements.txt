@@ -5,3 +5,9 @@ pydantic
 gymnasium
 numpy
 uvicorn
+
+fastapi
+uvicorn
+websockets
+numpy
+python-multipart
