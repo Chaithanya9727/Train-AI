@@ -48,6 +48,25 @@ export default function RealtimePage() {
     return () => socketRef.current?.close();
   }, []);
 
+  const [searchedPlace, setSearchedPlace] = useState("");
+
+  const quickCities = [
+    { name: "Delhi", lat: 28.6139, lon: 77.209 },
+    { name: "Chennai", lat: 13.0827, lon: 80.2707 },
+    { name: "Kolkata", lat: 22.5726, lon: 88.3639 },
+    { name: "Bengaluru", lat: 12.9716, lon: 77.5946 },
+    { name: "Hyderabad", lat: 17.385, lon: 78.4867 },
+    { name: "Jaipur", lat: 26.9124, lon: 75.7873 },
+    { name: "Lucknow", lat: 26.8467, lon: 80.9462 },
+    { name: "Ahmedabad", lat: 23.0225, lon: 72.5714 },
+  ];
+
+  const goToLocation = (lat: number, lon: number, name: string) => {
+    setMapCenter([lat, lon]); setMapZoom(10); setSearchedPlace(name);
+    if (socketRef.current?.readyState === WebSocket.OPEN)
+      socketRef.current.send(JSON.stringify({ type: "SET_LOCATION", lat, lon }));
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery) return;
@@ -57,9 +76,7 @@ export default function RealtimePage() {
       const d = await res.json();
       if (d?.[0]) {
         const lat = parseFloat(d[0].lat), lon = parseFloat(d[0].lon);
-        setMapCenter([lat, lon]); setMapZoom(10);
-        if (socketRef.current?.readyState === WebSocket.OPEN)
-          socketRef.current.send(JSON.stringify({ type: "SET_LOCATION", lat, lon }));
+        goToLocation(lat, lon, d[0].display_name?.split(",")[0] || searchQuery);
       }
     } catch (e) { console.error(e); } finally { setIsSearching(false); }
   };
@@ -161,18 +178,31 @@ export default function RealtimePage() {
 
         {/* MAP */}
         <main className="col-span-9 bg-zinc-900/40 rounded-2xl border border-white/5 overflow-hidden relative flex flex-col">
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
-            <div className="bg-zinc-950/90 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-3">
-              <div className="w-2 h-2 bg-fuchsia-500 rounded-full animate-pulse shadow-[0_0_8px_#d946ef]" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300">{searchQuery || "MUMBAI → DELHI CORRIDOR"}</span>
+          <div className="absolute top-4 left-4 flex flex-col gap-3 max-w-md" style={{ zIndex: 1000 }}>
+            {/* SEARCH BAR — BIG & PROMINENT */}
+            <div className="bg-zinc-950/95 backdrop-blur-xl p-4 rounded-2xl border border-fuchsia-500/20 shadow-[0_0_30px_rgba(217,70,239,0.1)]">
+              <form onSubmit={handleSearch} className="relative mb-3">
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="🔍 Search any place in India..." className="w-full bg-zinc-900 px-5 py-3 pl-10 rounded-xl border border-white/10 text-sm font-bold tracking-wide text-zinc-100 focus:outline-hidden focus:border-fuchsia-500/50 transition-all placeholder:text-zinc-600" />
+                <Search className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500", isSearching && "animate-spin text-fuchsia-400")} />
+              </form>
+              {/* QUICK CITY BUTTONS */}
+              <div className="flex flex-wrap gap-1.5">
+                {quickCities.map((c) => (
+                  <button key={c.name} onClick={() => goToLocation(c.lat, c.lon, c.name)} className="px-3 py-1.5 bg-zinc-900 border border-white/5 rounded-lg text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-fuchsia-400 hover:border-fuchsia-500/30 hover:bg-fuchsia-500/5 transition-all active:scale-95">
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+              {searchedPlace && (
+                <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-lg">
+                  <div className="w-2 h-2 bg-fuchsia-400 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-fuchsia-300">📍 {searchedPlace}</span>
+                </div>
+              )}
             </div>
-            <form onSubmit={handleSearch} className="relative">
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search Indian city..." className="bg-zinc-950/90 backdrop-blur-xl px-4 py-2 pl-9 rounded-2xl border border-white/10 text-[10px] font-black tracking-widest text-zinc-100 focus:outline-hidden focus:border-fuchsia-500/50 w-48 transition-all focus:w-64" />
-              <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-600", isSearching && "animate-spin text-fuchsia-400")} />
-            </form>
           </div>
 
-          <div className="absolute top-4 right-4 z-10 bg-zinc-950/90 backdrop-blur-xl p-3 rounded-2xl border border-white/5 text-[8px] font-black uppercase tracking-widest text-zinc-600 space-y-1.5">
+          <div className="absolute top-4 right-4 bg-zinc-950/90 backdrop-blur-xl p-3 rounded-2xl border border-white/5 text-[8px] font-black uppercase tracking-widest text-zinc-600 space-y-1.5" style={{ zIndex: 1000 }}>
             <div className="flex items-center gap-2"><div className="w-2 h-2 bg-emerald-500 rounded-full" /> On Time</div>
             <div className="flex items-center gap-2"><div className="w-2 h-2 bg-yellow-500 rounded-full" /> Delayed</div>
             <div className="flex items-center gap-2"><div className="w-2 h-2 bg-rose-500 rounded-full" /> Stopped</div>

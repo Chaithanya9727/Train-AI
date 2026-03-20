@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Home, FastForward, PlusCircle, MinusCircle, Play, Terminal, Search, Navigation, RotateCw, AlertTriangle, ShieldCheck, Zap, Siren } from "lucide-react";
+import { Home, FastForward, PlusCircle, MinusCircle, Play, Search, Navigation, RotateCw, AlertTriangle, ShieldCheck, Zap, Siren, CloudRain, CloudFog, CloudLightning, Sun, Volume2, VolumeX, TrendingUp, Users } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -14,6 +14,7 @@ const MapContainer = dynamic(() => import("react-leaflet").then((m) => m.MapCont
 const TileLayer = dynamic(() => import("react-leaflet").then((m) => m.TileLayer), { ssr: false });
 const Marker = dynamic(() => import("react-leaflet").then((m) => m.Marker), { ssr: false });
 const Popup = dynamic(() => import("react-leaflet").then((m) => m.Popup), { ssr: false });
+const Polyline = dynamic(() => import("react-leaflet").then((m) => m.Polyline), { ssr: false });
 
 function MapController({ center }: { center: [number, number] }) {
   const { useMap } = require("react-leaflet");
@@ -28,24 +29,47 @@ export default function SimulationPage() {
   const [mapCenter, setMapCenter] = useState<[number, number]>([23.5, 74.5]);
   const [searchQuery, setSearchQuery] = useState("");
   const [simSpeed, setSimSpeed] = useState(1);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [L, setL] = useState<any>(null);
   const socketRef = useRef<WebSocket | null>(null);
+  const lastVoiceRef = useRef("");
+
+  // Voice Alert System
+  const speak = useCallback((text: string) => {
+    if (!voiceEnabled || typeof window === 'undefined') return;
+    if (text === lastVoiceRef.current) return;
+    lastVoiceRef.current = text;
+    try {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.1;
+      utterance.pitch = 0.8;
+      utterance.volume = 0.8;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    } catch(e) {}
+  }, [voiceEnabled]);
 
   useEffect(() => {
     import("leaflet").then((mod) => setL(mod.default));
     const connect = () => {
-      // DYNAMIC BACKEND URL for Render.com support
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
       const wsUrl = backendUrl.replace("http", "ws") + "/ws";
       const ws = new WebSocket(wsUrl);
       ws.onopen = () => setIsConnected(true);
       ws.onclose = () => { setIsConnected(false); setTimeout(connect, 3000); };
-      ws.onmessage = (e) => setData(JSON.parse(e.data));
+      ws.onmessage = (e) => {
+        const parsed = JSON.parse(e.data);
+        setData(parsed);
+        // Voice alerts
+        if (parsed.voice_alerts?.length > 0) {
+          speak(parsed.voice_alerts[0]);
+        }
+      };
       socketRef.current = ws;
     };
     connect();
     return () => socketRef.current?.close();
-  }, []);
+  }, [speak]);
 
   const send = (type: string, payload: any = {}) => {
     if (socketRef.current?.readyState === WebSocket.OPEN)
@@ -68,6 +92,26 @@ export default function SimulationPage() {
   const stats = data?.stats;
   const alerts = data?.alerts || [];
   const signals = data?.signals || [];
+  const weather = data?.weather || {};
+  const analytics = data?.analytics || {};
+  const trackRoutes = data?.track_routes || [];
+
+  const WeatherIcon = weather.type === "STORM" ? CloudLightning : weather.type === "RAIN" ? CloudRain : weather.type === "FOG" ? CloudFog : Sun;
+  const weatherColor = weather.type === "STORM" ? "text-rose-400" : weather.type === "RAIN" ? "text-blue-400" : weather.type === "FOG" ? "text-zinc-400" : "text-yellow-400";
+
+  // Mini chart renderer
+  const MiniChart = ({ data: chartData, color, h = 40 }: { data: number[], color: string, h?: number }) => {
+    if (!chartData?.length) return <div className="h-10 bg-zinc-950 rounded-lg" />;
+    const max = Math.max(...chartData, 1);
+    const w = 100 / chartData.length;
+    return (
+      <svg viewBox={`0 0 100 ${h}`} className="w-full" style={{ height: h }}>
+        <defs><linearGradient id={`g-${color}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.4" /><stop offset="100%" stopColor={color} stopOpacity="0.05" /></linearGradient></defs>
+        <path d={`M 0 ${h} ${chartData.map((v, i) => `L ${i * w} ${h - (v / max) * (h - 4)}`).join(" ")} L 100 ${h} Z`} fill={`url(#g-${color})`} />
+        <path d={`${chartData.map((v, i) => `${i === 0 ? 'M' : 'L'} ${i * w} ${h - (v / max) * (h - 4)}`).join(" ")}`} fill="none" stroke={color} strokeWidth="1.5" />
+      </svg>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#04060b] text-zinc-100 font-sans">
@@ -79,10 +123,24 @@ export default function SimulationPage() {
           <div className="p-2 bg-orange-500/10 rounded-xl border border-orange-500/20"><FastForward className="w-5 h-5 text-orange-400" /></div>
           <div>
             <h1 className="text-base font-black uppercase tracking-tight">Module 01: <span className="text-orange-400">AI Simulation</span></h1>
-            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-600">Collision Detection • Signal Automation • Delay Prediction</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-600">Collision Detection • Signal Automation • Weather • Voice AI</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {/* WEATHER BADGE */}
+          <div className={cn("px-3 py-1.5 rounded-xl border flex items-center gap-2",
+            weather.type === "STORM" ? "bg-rose-500/10 border-rose-500/20" :
+            weather.type === "RAIN" ? "bg-blue-500/10 border-blue-500/20" :
+            weather.type === "FOG" ? "bg-zinc-500/10 border-zinc-500/20" :
+            "bg-yellow-500/10 border-yellow-500/20"
+          )}>
+            <WeatherIcon className={cn("w-3.5 h-3.5", weatherColor)} />
+            <span className={cn("text-[9px] font-black uppercase tracking-widest", weatherColor)}>{weather.type || "CLEAR"}</span>
+          </div>
+          {/* VOICE TOGGLE */}
+          <button onClick={() => setVoiceEnabled(!voiceEnabled)} className={cn("p-2 rounded-xl border transition-all", voiceEnabled ? "bg-emerald-500/10 border-emerald-500/20" : "bg-zinc-800 border-white/5")}>
+            {voiceEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-zinc-500" />}
+          </button>
           {alerts.length > 0 && (
             <div className="px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-2 animate-pulse">
               <AlertTriangle className="w-4 h-4 text-rose-400" />
@@ -96,47 +154,52 @@ export default function SimulationPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-5 p-5 h-[calc(100vh-57px)]">
+      <div className="grid grid-cols-12 gap-4 p-4 h-[calc(100vh-57px)]">
         {/* LEFT: CONTROLS */}
-        <aside className="col-span-3 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+        <aside className="col-span-3 flex flex-col gap-3 overflow-y-auto custom-scrollbar">
           {/* ENGINE CONTROLS */}
-          <div className="bg-zinc-900/60 backdrop-blur-xl p-5 rounded-2xl border border-white/5">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2"><Play className="w-3 h-3 text-orange-400" /> Engine Controls</h2>
-            <div className="space-y-4">
+          <div className="bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-white/5">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><Play className="w-3 h-3 text-orange-400" /> Engine Controls</h2>
+            <div className="space-y-3">
               <div>
-                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-2"><span>Speed</span><span className="text-orange-400">{simSpeed}X</span></div>
+                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-1"><span>Speed</span><span className="text-orange-400">{simSpeed}X</span></div>
                 <input type="range" min="1" max="10" value={simSpeed} onChange={(e) => { setSimSpeed(parseInt(e.target.value)); send("SET_SPEED", { speed: parseInt(e.target.value) }); }} className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500" />
               </div>
               <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => send("ADD_TRAIN")} className="flex flex-col items-center gap-1 py-2.5 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-orange-500/40 transition-all active:scale-95">
+                <button onClick={() => send("ADD_TRAIN")} className="flex flex-col items-center gap-1 py-2 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-orange-500/40 transition-all active:scale-95">
                   <PlusCircle className="w-4 h-4 text-orange-400" /> Spawn
                 </button>
-                <button onClick={() => send("REMOVE_TRAIN")} className="flex flex-col items-center gap-1 py-2.5 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-rose-500/40 transition-all active:scale-95">
+                <button onClick={() => send("REMOVE_TRAIN")} className="flex flex-col items-center gap-1 py-2 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-rose-500/40 transition-all active:scale-95">
                   <MinusCircle className="w-4 h-4 text-rose-400" /> Purge
                 </button>
-                <button onClick={() => send("ADD_TRAIN", { emergency: true })} className="flex flex-col items-center gap-1 py-2.5 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-yellow-500/40 transition-all active:scale-95">
+                <button onClick={() => send("ADD_TRAIN", { emergency: true })} className="flex flex-col items-center gap-1 py-2 bg-zinc-950 border border-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest hover:border-yellow-500/40 transition-all active:scale-95">
                   <Siren className="w-4 h-4 text-yellow-400" /> SOS
                 </button>
               </div>
             </div>
           </div>
 
+          {/* WEATHER IMPACT */}
+          <div className={cn("backdrop-blur-xl p-4 rounded-2xl border", weather.type === "STORM" ? "bg-rose-950/30 border-rose-500/20" : weather.type === "RAIN" ? "bg-blue-950/30 border-blue-500/20" : weather.type === "FOG" ? "bg-zinc-900/60 border-zinc-500/20" : "bg-zinc-900/60 border-white/5")}>
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><WeatherIcon className={cn("w-3 h-3", weatherColor)} /> Weather Impact</h2>
+            <div className="grid grid-cols-2 gap-2 text-[8px] font-mono uppercase tracking-widest">
+              <div className="p-2 bg-zinc-950/60 rounded-lg"><span className="text-zinc-600">Type</span><div className={cn("font-black text-sm mt-0.5", weatherColor)}>{weather.type || "—"}</div></div>
+              <div className="p-2 bg-zinc-950/60 rounded-lg"><span className="text-zinc-600">Visibility</span><div className="font-black text-sm text-zinc-200 mt-0.5">{weather.visibility_km || 10} km</div></div>
+              <div className="p-2 bg-zinc-950/60 rounded-lg"><span className="text-zinc-600">Wind</span><div className="font-black text-sm text-zinc-200 mt-0.5">{weather.wind_speed || 5} km/h</div></div>
+              <div className="p-2 bg-zinc-950/60 rounded-lg"><span className="text-zinc-600">Speed Effect</span><div className={cn("font-black text-sm mt-0.5", weather.speed_multiplier < 0.5 ? "text-rose-400" : weather.speed_multiplier < 0.8 ? "text-yellow-400" : "text-emerald-400")}>{((weather.speed_multiplier || 1) * 100).toFixed(0)}%</div></div>
+            </div>
+          </div>
+
           {/* SIGNAL STATUS */}
-          <div className="bg-zinc-900/60 backdrop-blur-xl p-5 rounded-2xl border border-white/5">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2"><ShieldCheck className="w-3 h-3 text-cyan-400" /> 🚦 Signal Status</h2>
-            <div className="space-y-2">
+          <div className="bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-white/5">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><ShieldCheck className="w-3 h-3 text-cyan-400" /> 🚦 Signals</h2>
+            <div className="space-y-1.5">
               {signals.map((s: any) => (
-                <div key={s.id} className="flex items-center justify-between p-2.5 bg-zinc-950 rounded-xl border border-white/5">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 truncate max-w-[120px]">{s.station}</span>
+                <div key={s.id} className="flex items-center justify-between p-2 bg-zinc-950 rounded-xl border border-white/5">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400 truncate max-w-[100px]">{s.station}</span>
                   <div className="flex items-center gap-2">
-                    <div className={cn("w-3 h-3 rounded-full shadow-lg", 
-                      s.state === "RED" ? "bg-rose-500 shadow-rose-500/50" : 
-                      s.state === "YELLOW" ? "bg-yellow-500 shadow-yellow-500/50 animate-pulse" : 
-                      "bg-emerald-500 shadow-emerald-500/50"
-                    )} />
-                    <span className={cn("text-[8px] font-black uppercase", 
-                      s.state === "RED" ? "text-rose-400" : s.state === "YELLOW" ? "text-yellow-400" : "text-emerald-400"
-                    )}>{s.state}</span>
+                    <div className={cn("w-2.5 h-2.5 rounded-full shadow-lg", s.state === "RED" ? "bg-rose-500 shadow-rose-500/50" : s.state === "YELLOW" ? "bg-yellow-500 shadow-yellow-500/50 animate-pulse" : "bg-emerald-500 shadow-emerald-500/50")} />
+                    <span className={cn("text-[7px] font-black uppercase", s.state === "RED" ? "text-rose-400" : s.state === "YELLOW" ? "text-yellow-400" : "text-emerald-400")}>{s.state}</span>
                   </div>
                 </div>
               ))}
@@ -144,8 +207,8 @@ export default function SimulationPage() {
           </div>
 
           {/* LIVE STATS */}
-          <div className="bg-zinc-900/60 backdrop-blur-xl p-5 rounded-2xl border border-white/5">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2"><Zap className="w-3 h-3 text-emerald-400" /> Network Stats</h2>
+          <div className="bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-white/5">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><Zap className="w-3 h-3 text-emerald-400" /> Network Stats</h2>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { label: "Running", value: stats?.running || 0, color: "text-emerald-400" },
@@ -153,34 +216,49 @@ export default function SimulationPage() {
                 { label: "Delayed", value: stats?.delayed || 0, color: "text-yellow-400" },
                 { label: "Saved", value: stats?.collisions_prevented || 0, color: "text-cyan-400" },
               ].map(s => (
-                <div key={s.label} className="p-3 bg-zinc-950 rounded-xl border border-white/5 text-center">
-                  <div className={cn("text-xl font-black", s.color)}>{s.value}</div>
-                  <div className="text-[8px] font-bold uppercase tracking-widest text-zinc-600 mt-1">{s.label}</div>
+                <div key={s.label} className="p-2 bg-zinc-950 rounded-xl border border-white/5 text-center">
+                  <div className={cn("text-lg font-black", s.color)}>{s.value}</div>
+                  <div className="text-[7px] font-bold uppercase tracking-widest text-zinc-600 mt-0.5">{s.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* COLLISION ALERTS */}
-          <div className="bg-zinc-900/60 backdrop-blur-xl p-5 rounded-2xl border border-white/5 flex-1 min-h-0">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2"><AlertTriangle className="w-3 h-3 text-rose-400" /> AI Alerts</h2>
-            <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-40">
+          {/* ANALYTICS CHARTS */}
+          <div className="bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-white/5">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><TrendingUp className="w-3 h-3 text-fuchsia-400" /> Live Analytics</h2>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-600 mb-1"><span>Delay Trend</span><span className="text-yellow-400">{stats?.avg_delay || 0} min avg</span></div>
+                <MiniChart data={analytics.delay_trend} color="#eab308" />
+              </div>
+              <div>
+                <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-600 mb-1"><span>Throughput</span><span className="text-emerald-400">{analytics.avg_throughput || 0}</span></div>
+                <MiniChart data={analytics.throughput_trend} color="#22c55e" />
+              </div>
+              <div className="flex items-center justify-between p-2 bg-zinc-950 rounded-xl border border-white/5">
+                <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500"><Users className="w-3 h-3 inline mr-1" />Passengers</span>
+                <span className="text-sm font-black text-fuchsia-400">{(stats?.total_passengers || 0).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* AI ALERTS */}
+          <div className="bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-white/5">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2"><AlertTriangle className="w-3 h-3 text-rose-400" /> AI Alerts</h2>
+            <div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar">
               {alerts.length === 0 ? (
-                <div className="text-center py-6 text-[10px] text-zinc-700 font-bold uppercase tracking-widest">✅ All Clear — No Threats</div>
-              ) : (
-                alerts.map((a: any, i: number) => (
-                  <div key={i} className={cn("p-3 rounded-xl border text-[9px] font-bold uppercase tracking-widest",
-                    a.severity === "CRITICAL" ? "bg-rose-500/5 border-rose-500/20 text-rose-400" : "bg-yellow-500/5 border-yellow-500/20 text-yellow-400"
-                  )}>{a.message}</div>
-                ))
-              )}
+                <div className="text-center py-4 text-[9px] text-zinc-700 font-bold uppercase tracking-widest">✅ All Clear</div>
+              ) : alerts.map((a: any, i: number) => (
+                <div key={i} className={cn("p-2.5 rounded-xl border text-[8px] font-bold uppercase tracking-widest", a.severity === "CRITICAL" ? "bg-rose-500/5 border-rose-500/20 text-rose-400" : "bg-yellow-500/5 border-yellow-500/20 text-yellow-400")}>{a.message}</div>
+              ))}
             </div>
           </div>
         </aside>
 
         {/* MAP */}
         <main className="col-span-9 bg-zinc-900/40 rounded-2xl border border-white/5 overflow-hidden relative flex flex-col">
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
+          <div className="absolute top-4 left-4 flex items-center gap-3" style={{ zIndex: 1000 }}>
             <div className="bg-zinc-950/90 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-3">
               <Navigation className="w-3 h-3 text-orange-400" />
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">{searchQuery || "INDIA CORRIDOR"}</span>
@@ -196,6 +274,10 @@ export default function SimulationPage() {
               <MapContainer center={mapCenter} zoom={7} scrollWheelZoom={true} className="w-full h-full" style={{ background: '#0a0c14' }}>
                 <MapController center={mapCenter} />
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="CartoDB" />
+                {/* ANIMATED TRACK LINES */}
+                {trackRoutes.map((r: any, i: number) => (
+                  <Polyline key={i} positions={r.coords} pathOptions={{ color: '#f59e0b', weight: 2, opacity: 0.4, dashArray: '8 12', dashOffset: String((data?.tick || 0) % 20) }} />
+                ))}
                 {data?.stations?.map((s: any, i: number) => (
                   <Marker key={i} position={[s.lat, s.lon]} icon={stationIcon || undefined}>
                     <Popup className="cp"><div className="p-2 font-black uppercase text-[10px] text-orange-400">{s.name}</div></Popup>
@@ -207,8 +289,10 @@ export default function SimulationPage() {
                       <div className="p-3 space-y-1">
                         <div className="text-[11px] font-black text-white uppercase">{t.name}</div>
                         <div className="h-px bg-white/10" />
-                        <div className={cn("text-[9px] font-black uppercase", t.status === "RUNNING" ? "text-emerald-400" : t.status === "STOPPED" ? "text-rose-400" : "text-yellow-400")}>Status: {t.status}</div>
+                        <div className={cn("text-[9px] font-black uppercase", t.status === "RUNNING" ? "text-emerald-400" : t.status === "STOPPED" ? "text-rose-400" : "text-yellow-400")}>● {t.status}</div>
+                        <div className="text-[8px] text-zinc-500 font-mono">Speed: {t.speed_kmh} km/h</div>
                         <div className="text-[8px] text-zinc-500 font-mono">Delay: {t.delay_minutes} min</div>
+                        <div className="text-[8px] text-zinc-500 font-mono">Passengers: {t.passengers}</div>
                       </div>
                     </Popup>
                   </Marker>
@@ -217,14 +301,15 @@ export default function SimulationPage() {
             )}
           </div>
 
-          <div className="bg-zinc-950/90 border-t border-white/5 p-3 flex items-center justify-between z-10">
-            <div className="flex gap-6 text-[9px]">
+          <div className="bg-zinc-950/90 border-t border-white/5 p-3 flex items-center justify-between" style={{ zIndex: 1000 }}>
+            <div className="flex gap-5 text-[9px]">
               <span className="text-zinc-600 font-black uppercase">Sim: <span className="text-orange-400">{simSpeed}X</span></span>
               <span className="text-zinc-600 font-black uppercase">Trains: <span className="text-cyan-400">{stats?.total_trains || 0}</span></span>
               <span className="text-zinc-600 font-black uppercase">Avg Delay: <span className="text-yellow-400">{stats?.avg_delay || 0} min</span></span>
-              <span className="text-zinc-600 font-black uppercase">Collisions Prevented: <span className="text-emerald-400">{stats?.collisions_prevented || 0}</span></span>
+              <span className="text-zinc-600 font-black uppercase">Saved: <span className="text-emerald-400">{stats?.collisions_prevented || 0}</span></span>
+              <span className="text-zinc-600 font-black uppercase">Weather: <span className={weatherColor}>{weather.type || "CLEAR"}</span></span>
             </div>
-            <div className="flex items-center gap-2"><RotateCw className="w-2.5 h-2.5 text-zinc-700 animate-spin" /><span className="text-[9px] font-mono text-zinc-700">SIM_v4</span></div>
+            <div className="flex items-center gap-2"><RotateCw className="w-2.5 h-2.5 text-zinc-700 animate-spin" /><span className="text-[9px] font-mono text-zinc-700">SIM_v5.0</span></div>
           </div>
         </main>
       </div>
