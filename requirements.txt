@@ -1,0 +1,7 @@
+fastapi
+python-multipart
+websockets
+pydantic
+gymnasium
+numpy
+uvicorn
