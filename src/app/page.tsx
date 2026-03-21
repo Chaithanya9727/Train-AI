@@ -41,7 +41,7 @@ export default function Home() {
       </nav>
 
       {/* ── HERO VIDEO BACKGROUND ── */}
-      <div className="absolute top-0 inset-x-0 h-[100vh] md:h-[110vh] overflow-hidden" style={{ zIndex: 0 }}>
+      <div className="absolute top-0 inset-x-0 h-screen md:h-[110vh] overflow-hidden" style={{ zIndex: 0 }}>
         <video 
           autoPlay 
           loop 
@@ -49,10 +49,10 @@ export default function Home() {
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen"
         >
-          <source src="https://www.dropbox.com/scl/fi/ezh1gn45038idusy16s8a/train-bg.mp4.mp4?rlkey=b896m65rnba5mldxglr88gwk7&st=14zjpj2t&raw=1" type="video/mp4" />
+          <source src="/train-bg.mp4" type="video/mp4" />
         </video>
         {/* Seamless gradient fade mask into the dark background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/20 via-[#030712]/60 to-[#030712]" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#030712]/20 via-[#030712]/60 to-[#030712]" />
       </div>
 
       {/* ── HERO ── */}
