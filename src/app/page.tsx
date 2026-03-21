@@ -40,6 +40,21 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* ── HERO VIDEO BACKGROUND ── */}
+      <div className="absolute top-0 inset-x-0 h-[100vh] md:h-[110vh] overflow-hidden" style={{ zIndex: 0 }}>
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen"
+        >
+          <source src="/train-bg.mp4" type="video/mp4" />
+        </video>
+        {/* Seamless gradient fade mask into the dark background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/20 via-[#030712]/60 to-[#030712]" />
+      </div>
+
       {/* ── HERO ── */}
       <header className="relative z-10 pt-40 pb-10 px-6 max-w-7xl mx-auto">
         <motion.div 
