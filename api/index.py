@@ -35,9 +35,22 @@ async def fetch_osm_stations(lat: float, lon: float, radius: int = 50000):
                     for i, s in enumerate(stns): s["id"] = i
                     return stns
     except: pass
-    mods = [(-0.06, -0.04), (-0.03, 0.02), (0.01, 0.05), (0.04, -0.01), (0.07, 0.03), (0.1, 0.08)]
-    names = ["MAIN", "WEST", "EAST", "SOUTH", "NORTH", "CENTRAL"]
-    return [{"id": i, "name": f"STN_{names[i]}", "lat": lat + m[0], "lon": lon + m[1]} for i, m in enumerate(mods)]
+    # High-quality fallback if Overpass fails (stays closer and shifts inland for coastal cities)
+    is_east_coast = lon > 78.5  # Chennai, Kolkata, etc.
+    is_west_coast = lon < 74.0  # Mumbai, Goa, etc.
+    
+    offsets = [(-0.02, -0.03), (-0.01, 0.01), (0.01, 0.03), (0.02, -0.01), (0.03, 0.02), (0.04, 0.04)]
+    
+    # Dynamic inland shift to avoid water
+    final_mods = []
+    for m_lat, m_lon in offsets:
+        adjust_lon = m_lon
+        if is_east_coast: adjust_lon -= 0.06 # Move west away from the sea
+        if is_west_coast: adjust_lon += 0.06 # Move east away from the sea
+        final_mods.append((m_lat, adjust_lon))
+
+    names = ["METRO", "WEST", "EAST", "SOUTH", "NORTH", "CENTRAL"]
+    return [{"id": i, "name": f"STN_{names[i]}", "lat": lat + m[0], "lon": lon + m[1]} for i, m in enumerate(final_mods)]
 
 def lerp(a, b, t): return a + (b - a) * t
 
