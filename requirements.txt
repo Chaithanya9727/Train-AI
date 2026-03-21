@@ -5,6 +5,7 @@ pydantic
 gymnasium
 numpy
 uvicorn
+httpx
 
 fastapi
 uvicorn
