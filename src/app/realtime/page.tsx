@@ -136,7 +136,7 @@ export default function RealtimePage() {
 
   /* ── RENDER ─────────────────────────────────────── */
   return (
-    <div className="relative min-h-screen bg-[#030712] text-zinc-100 font-sans overflow-hidden">
+    <div className="relative min-h-screen bg-[#030712] text-zinc-100 font-sans xl:overflow-hidden">
       <div className="cyber-bg" />
       <div className="cyber-grid" />
 
@@ -316,7 +316,7 @@ export default function RealtimePage() {
         </aside>
 
         {/* ── MAP ─────────────────────────────────── */}
-        <main className="w-full xl:col-span-9 min-h-[60vh] xl:min-h-0 glass-card rounded-3xl overflow-hidden relative flex flex-col" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+        <main className="w-full xl:col-span-9 h-[65vh] xl:h-full glass-card rounded-3xl overflow-hidden relative flex flex-col" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
           {/* Location indicator */}
           <div className="absolute top-5 left-5 flex flex-col gap-3 max-w-sm" style={{ zIndex: 1000 }}>
             {searchedPlace && (
