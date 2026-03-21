@@ -177,10 +177,10 @@ export default function RealtimePage() {
       </div>
 
       {/* ── MAIN GRID ─────────────────────────────── */}
-      <div className="grid grid-cols-12 gap-4 p-4 h-[calc(100vh-52px)]">
+      <div className="flex flex-col xl:grid xl:grid-cols-12 gap-4 p-4 xl:h-[calc(100vh-52px)]">
 
         {/* ── LEFT SIDEBAR ──────────────────────────── */}
-        <aside className="col-span-3 flex flex-col gap-3.5 overflow-y-auto custom-scrollbar pb-4 pr-1">
+        <aside className="w-full xl:col-span-3 flex flex-col gap-3.5 xl:overflow-y-auto custom-scrollbar xl:pb-4 xl:pr-1">
 
           {/* SEARCH */}
           <div className="glass-card p-5 rounded-2xl" style={{ borderColor: "rgba(217,70,239,0.1)" }}>
@@ -316,7 +316,7 @@ export default function RealtimePage() {
         </aside>
 
         {/* ── MAP ─────────────────────────────────── */}
-        <main className="col-span-9 glass-card rounded-3xl overflow-hidden relative flex flex-col" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+        <main className="w-full xl:col-span-9 min-h-[60vh] xl:min-h-0 glass-card rounded-3xl overflow-hidden relative flex flex-col" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
           {/* Location indicator */}
           <div className="absolute top-5 left-5 flex flex-col gap-3 max-w-sm" style={{ zIndex: 1000 }}>
             {searchedPlace && (
