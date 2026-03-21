@@ -460,7 +460,7 @@ export default function SimulationPage() {
 
             <MapContainer center={mapCenter} zoom={7} scrollWheelZoom={true} className="w-full h-full" style={{ background: '#0a0c10' }}>
               <MapController center={mapCenter} />
-              <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" attribution="Stadia" />
+              <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="&copy; <a href='https://carto.com/attributions'>CARTO</a>" />
               {/* Track lines */}
               {trackRoutes.map((r: any, i: number) => (
                 <Polyline key={i} positions={r.coords} pathOptions={{

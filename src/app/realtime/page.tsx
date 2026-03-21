@@ -340,7 +340,7 @@ export default function RealtimePage() {
             <div className="absolute inset-x-0 h-px bg-fuchsia-500/10 pointer-events-none" style={{ zIndex: 1001, animation: "scan 10s linear infinite" }} />
             <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true} className="w-full h-full" style={{ background: '#0a0c10' }}>
               <MapController center={mapCenter} zoom={mapZoom} />
-              <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" attribution="Stadia" />
+              <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution="&copy; <a href='https://carto.com/attributions'>CARTO</a>" />
               {data?.stations?.map((s: any, i: number) => (
                 <Marker key={`st-${i}`} position={[s.lat, s.lon]} icon={stationIcon || undefined}>
                   <Popup><div className="p-2 font-bold text-[10px] text-fuchsia-400">{s.name}</div></Popup>
