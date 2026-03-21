@@ -49,7 +49,7 @@ export default function Home() {
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen"
         >
-          <source src="/train-bg.mp4" type="video/mp4" />
+          <source src="https://www.dropbox.com/scl/fi/ezh1gn45038idusy16s8a/train-bg.mp4.mp4?rlkey=b896m65rnba5mldxglr88gwk7&st=14zjpj2t&raw=1" type="video/mp4" />
         </video>
         {/* Seamless gradient fade mask into the dark background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#030712]/20 via-[#030712]/60 to-[#030712]" />
