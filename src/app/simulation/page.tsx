@@ -480,14 +480,35 @@ export default function SimulationPage() {
               {data?.trains?.map((t: any) => (
                 <Marker key={`tr-${t.id}`} position={[t.lat, t.lon]} icon={trainIcon || undefined}>
                   <Popup>
-                    <div className="p-3 space-y-1.5 min-w-[150px]">
-                      <div className="text-[11px] font-bold text-white">{t.name}</div>
-                      <div className="h-px bg-white/10" />
-                      <div className={cn("text-[9px] font-bold", t.status === "RUNNING" ? "text-emerald-400" : t.status === "STOPPED" ? "text-rose-400" : "text-yellow-400")}>● {t.status}</div>
-                      <div className="text-[8px] text-zinc-500 font-mono space-y-0.5">
-                        <div>Speed: {t.speed_kmh} km/h</div>
-                        <div>Delay: {t.delay_minutes} min</div>
-                        <div>PAX: {t.passengers}</div>
+                    <div className="p-4 space-y-3 min-w-[200px] bg-black/80 backdrop-blur-xl border border-orange-500/20 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-bold text-white tracking-widest">{t.name}</div>
+                        <div className={cn("px-2 py-0.5 rounded-full text-[7px] font-bold border", 
+                          t.status === "RUNNING" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                        )}>{t.status}</div>
+                      </div>
+                      <div className="h-px bg-white/5" />
+                      <div className="grid grid-cols-2 gap-3 text-[8px] font-mono tracking-widest uppercase text-zinc-400">
+                        <div>
+                          <div className="text-zinc-600 mb-1">Live Speed</div>
+                          <div className="text-zinc-200 font-bold">{t.speed_kmh} KM/H</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">Payload</div>
+                          <div className="text-zinc-200 font-bold">{t.passengers} PAX</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">Delay</div>
+                          <div className={cn("font-bold", t.delay_minutes > 10 ? "text-rose-400" : "text-emerald-400")}>{t.delay_minutes} MIN</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">Track Segment</div>
+                          <div className="text-orange-400 font-bold">NODE_{t.track || 0}</div>
+                        </div>
+                      </div>
+                      <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mt-1">
+                        <div className={cn("h-full transition-all duration-700", t.delay_minutes > 15 ? "bg-rose-500" : t.delay_minutes > 5 ? "bg-amber-400" : "bg-emerald-500")}
+                             style={{ width: `${Math.max(20, 100 - (t.delay_minutes * 4))}%` }} />
                       </div>
                     </div>
                   </Popup>

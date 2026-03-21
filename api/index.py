@@ -35,22 +35,28 @@ async def fetch_osm_stations(lat: float, lon: float, radius: int = 50000):
                     for i, s in enumerate(stns): s["id"] = i
                     return stns
     except: pass
-    # High-quality fallback if Overpass fails (stays closer and shifts inland for coastal cities)
-    is_east_coast = lon > 78.5  # Chennai, Kolkata, etc.
-    is_west_coast = lon < 74.0  # Mumbai, Goa, etc.
+    # Ultra-aggressive inland shift to avoid sea for cities like Chennai/Mumbai
+    is_east_coast = lon > 78.5
+    is_west_coast = lon < 74.0
     
-    offsets = [(-0.02, -0.03), (-0.01, 0.01), (0.01, 0.03), (0.02, -0.01), (0.03, 0.02), (0.04, 0.04)]
+    # Stay much closer to center for fallback
+    offsets = [(-0.01, -0.01), (-0.005, 0.01), (0.005, 0.015), (0.01, -0.005), (0.015, 0.01), (0.02, 0.02)]
     
-    # Dynamic inland shift to avoid water
     final_mods = []
     for m_lat, m_lon in offsets:
         adjust_lon = m_lon
-        if is_east_coast: adjust_lon -= 0.06 # Move west away from the sea
-        if is_west_coast: adjust_lon += 0.06 # Move east away from the sea
+        if is_east_coast: adjust_lon -= 0.12 # Massive shift west
+        if is_west_coast: adjust_lon += 0.12 # Massive shift east
         final_mods.append((m_lat, adjust_lon))
 
-    names = ["METRO", "WEST", "EAST", "SOUTH", "NORTH", "CENTRAL"]
+    names = ["CITY", "WEST", "EAST", "SOUTH", "NORTH", "CENTRAL"]
     return [{"id": i, "name": f"STN_{names[i]}", "lat": lat + m[0], "lon": lon + m[1]} for i, m in enumerate(final_mods)]
+
+TRAIN_NAMES = [
+    "Vande Bharat Exp", "Rajdhani Express", "Shatabdi Express", "Duronto Express", 
+    "Tejas Express", "Garib Rath", "Gatimaan Express", "Humsafar Exp", 
+    "Mahamana Express", "Uday Express", "Antyodaya Exp", "Jan Shatabdi"
+]
 
 def lerp(a, b, t): return a + (b - a) * t
 
@@ -89,7 +95,7 @@ class TrainTrafficEngine:
         self.tick = 0
         self.ai_logs = []
         self.alerts = []
-        self.trains = [Train(i, f"EXP_{1000+i}", i % 5) for i in range(5)]
+        self.trains = [Train(i, random.choice(TRAIN_NAMES), i % 5) for i in range(5)]
         self.signals = [SignalState.GREEN] * max(1, len(self.stations) - 1)
         self.sim_speed = 1
         self.eco_mode = False
@@ -210,7 +216,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 res = await fetch_osm_stations(d["lat"], d["lon"])
                 if res and len(res) >= 2: 
                     engine.stations = res
-                    engine.trains = [Train(i, f"EXP_{1000+i}", i % (len(res)-1)) for i in range(5)]
+                    engine.trains = [Train(i, random.choice(TRAIN_NAMES), i % (len(res)-1)) for i in range(5)]
                     engine.broken_tracks = []
                     engine.ai_logs.append({"tick":engine.tick, "action":"SYNC", "reason":f"Recalculating routes for {res[0]['name']}."})
             elif type_val == "SET_SPEED":
@@ -218,8 +224,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 engine.ai_logs.append({"tick":engine.tick, "action":"SYS_VAR", "reason":f"Simulation speed set to {engine.sim_speed}X."})
             elif type_val == "ADD_TRAIN":
                 tid = len(engine.trains)
-                engine.trains.append(Train(tid, f"EXP_{1000+tid}", 0))
-                engine.ai_logs.append({"tick":engine.tick, "action":"INJECT", "reason":f"New train EXP_{1000+tid} injected to grid."})
+                name = random.choice(TRAIN_NAMES)
+                engine.trains.append(Train(tid, name, 0))
+                engine.ai_logs.append({"tick":engine.tick, "action":"INJECT", "reason":f"New train {name} injected to grid."})
             elif type_val == "REMOVE_TRAIN":
                 if engine.trains:
                     rem = engine.trains.pop()

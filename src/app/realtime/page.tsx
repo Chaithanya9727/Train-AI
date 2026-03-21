@@ -209,7 +209,8 @@ export default function RealtimePage() {
             </h2>
             <div className="space-y-1.5">
               {data?.stations?.map((s: any, i: number) => (
-                <div key={i} className="flex items-center gap-3 p-2.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors group">
+                <div key={i} onClick={() => { setMapCenter([s.lat, s.lon]); setMapZoom(13); }} 
+                  className="flex items-center gap-3 p-2.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer transition-colors group">
                   <div className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full shadow-[0_0_8px_#d946ef] group-hover:scale-125 transition-transform" />
                   <span className="text-[8px] font-bold tracking-widest text-zinc-400 group-hover:text-zinc-200 transition-colors truncate flex-1">{s.name.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
                   <ChevronRight className="w-3 h-3 text-zinc-800 group-hover:text-fuchsia-400 transition-colors" />
@@ -349,11 +350,36 @@ export default function RealtimePage() {
               {data?.trains?.map((t: any) => (
                 <Marker key={`tr-${t.id}`} position={[t.lat, t.lon]} icon={trainIcon || undefined}>
                   <Popup>
-                    <div className="p-3 space-y-1.5 min-w-[150px]">
-                      <div className="text-[11px] font-bold text-white">{t.name}</div>
-                      <div className="h-px bg-white/10" />
-                      <div className={cn("text-[9px] font-bold", t.status === "RUNNING" ? "text-emerald-400" : "text-rose-400")}>● {t.status}</div>
-                      <div className="text-[8px] text-zinc-500 font-mono">Delay: {t.delay_minutes} min</div>
+                    <div className="p-4 space-y-3 min-w-[200px] bg-black/80 backdrop-blur-xl border border-fuchsia-500/20 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-bold text-white tracking-widest">{t.name}</div>
+                        <div className={cn("px-2 py-0.5 rounded-full text-[7px] font-bold border", 
+                          t.status === "RUNNING" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                        )}>{t.status}</div>
+                      </div>
+                      <div className="h-px bg-white/5" />
+                      <div className="grid grid-cols-2 gap-3 text-[8px] font-mono tracking-widest uppercase">
+                        <div>
+                          <div className="text-zinc-600 mb-1">Live Speed</div>
+                          <div className="text-zinc-200 font-bold">{t.speed_kmh} KM/H</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">Payload</div>
+                          <div className="text-zinc-200 font-bold">{t.passengers} PAX</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">AI Delay</div>
+                          <div className={cn("font-bold", t.delay_minutes > 10 ? "text-rose-400" : "text-emerald-400")}>{t.delay_minutes} MIN</div>
+                        </div>
+                        <div>
+                          <div className="text-zinc-600 mb-1">Confidence</div>
+                          <div className="text-fuchsia-400 font-bold">{predictions[t.name] ? (predictions[t.name].confidence * 100).toFixed(0) : 0}%</div>
+                        </div>
+                      </div>
+                      <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mt-1">
+                        <div className={cn("h-full transition-all duration-700", t.delay_minutes > 15 ? "bg-rose-500" : t.delay_minutes > 5 ? "bg-amber-400" : "bg-emerald-500")}
+                             style={{ width: `${Math.max(10, Math.min(100, (predictions[t.name]?.confidence || 0) * 100))}%` }} />
+                      </div>
                     </div>
                   </Popup>
                 </Marker>
