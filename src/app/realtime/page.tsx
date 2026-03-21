@@ -149,14 +149,14 @@ export default function RealtimePage() {
             <Globe className="w-5 h-5 text-fuchsia-400" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight">
+            <h1 className="text-lg font-bold tracking-tight">
               <span className="text-fuchsia-400">Module 02:</span>{" "}
               <span className="text-zinc-200">Live Tracking</span>
             </h1>
-            <div className="flex items-center gap-2 text-[9px] font-bold tracking-[0.2em] text-zinc-600">
+            <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-zinc-600 uppercase">
               <span>Indian Rail Network</span>
               <span className="text-zinc-800">•</span>
-              <span className="text-fuchsia-500/50 font-mono">NODE_v4.2</span>
+              <span className="text-fuchsia-500/50 font-mono">CORRIDOR_v4.2</span>
             </div>
           </div>
         </div>
@@ -183,19 +183,19 @@ export default function RealtimePage() {
         <aside className="w-full xl:col-span-3 flex flex-col gap-3.5 xl:overflow-y-auto custom-scrollbar xl:pb-4 xl:pr-1">
 
           {/* SEARCH */}
-          <div className="glass-card p-5 rounded-2xl" style={{ borderColor: "rgba(217,70,239,0.1)" }}>
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 text-fuchsia-400" /> Search Location
+          <div className="glass-card p-6 rounded-2xl" style={{ borderColor: "rgba(217,70,239,0.1)" }}>
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-5 flex items-center gap-2 uppercase">
+              <Search className="w-4 h-4 text-fuchsia-400" /> Search Location
             </h2>
-            <form onSubmit={handleSearch} className="relative mb-3">
+            <form onSubmit={handleSearch} className="relative mb-4">
               <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Enter city name..."
-                className="w-full bg-black/40 px-4 py-2.5 pl-9 rounded-xl border border-white/5 text-xs font-bold text-zinc-100 focus:outline-none focus:border-fuchsia-500/30 transition-colors" />
-              <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600", isSearching && "animate-spin text-fuchsia-400")} />
+                className="w-full bg-black/40 px-5 py-3 pl-10 rounded-xl border border-white/5 text-sm font-bold text-zinc-100 focus:outline-none focus:border-fuchsia-500/30 transition-colors" />
+              <Search className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600", isSearching && "animate-spin text-fuchsia-400")} />
             </form>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {quickCities.map(c => (
                 <button key={c.name} onClick={() => goToLocation(c.lat, c.lon, c.name)}
-                  className="btn-premium px-2.5 py-1.5 bg-black/30 border border-white/5 text-zinc-500 hover:text-fuchsia-400 hover:border-fuchsia-500/20">
+                  className="btn-premium px-3 py-2 bg-black/30 border border-white/5 text-zinc-500 hover:text-fuchsia-400 hover:border-fuchsia-500/20 text-[10px] font-bold tracking-wider">
                   {c.name}
                 </button>
               ))}
@@ -203,44 +203,44 @@ export default function RealtimePage() {
           </div>
 
           {/* CORRIDOR STATIONS */}
-          <div className="glass-card p-5 rounded-2xl">
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-3 flex items-center gap-2">
-              <Train className="w-3.5 h-3.5 text-fuchsia-400" /> Corridor Stations
+          <div className="glass-card p-6 rounded-2xl">
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center gap-2 uppercase">
+              <Train className="w-4 h-4 text-fuchsia-400" /> Corridor Stations
             </h2>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {data?.stations?.map((s: any, i: number) => (
                 <div key={i} onClick={() => { setMapCenter([s.lat, s.lon]); setMapZoom(13); }} 
-                  className="flex items-center gap-3 p-2.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer transition-colors group">
-                  <div className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full shadow-[0_0_8px_#d946ef] group-hover:scale-125 transition-transform" />
-                  <span className="text-[8px] font-bold tracking-widest text-zinc-400 group-hover:text-zinc-200 transition-colors truncate flex-1">{s.name.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
-                  <ChevronRight className="w-3 h-3 text-zinc-800 group-hover:text-fuchsia-400 transition-colors" />
+                  className="flex items-center gap-4 p-3 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer transition-colors group">
+                  <div className="w-3 h-3 bg-fuchsia-500 rounded-full shadow-[0_0_8px_#d946ef] group-hover:scale-125 transition-transform" />
+                  <span className="text-[11px] font-bold tracking-widest text-zinc-400 group-hover:text-zinc-200 transition-colors truncate flex-1 uppercase">{s.name.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
+                  <ChevronRight className="w-4 h-4 text-zinc-800 group-hover:text-fuchsia-400 transition-colors" />
                 </div>
               ))}
             </div>
           </div>
 
           {/* DELAY PREDICTIONS */}
-          <div className="glass-card p-5 rounded-2xl flex-1 min-h-[300px] flex flex-col">
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center gap-2">
-              <Brain className="w-3.5 h-3.5 text-emerald-400" /> AI Delay Predictions
+          <div className="glass-card p-6 rounded-2xl flex-1 min-h-[300px] flex flex-col">
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-5 flex items-center gap-2 uppercase">
+              <Brain className="w-4 h-4 text-emerald-400" /> AI Delay Predictions
             </h2>
-            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2.5 pr-1">
+            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1">
               {data?.trains?.map((t: any, i: number) => {
                 const pred = predictions[t.name];
                 return (
-                  <div key={i} className="p-3.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[9px] font-bold text-fuchsia-400 tracking-widest truncate max-w-[130px]">{t.name}</span>
-                      <span className={cn("text-[7px] font-bold px-2 py-0.5 rounded-full border",
+                  <div key={i} className="p-4 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[11px] font-bold text-fuchsia-400 tracking-widest truncate max-w-[130px] uppercase">{t.name}</span>
+                      <span className={cn("text-[9px] font-bold px-2.5 py-1 rounded-full border",
                         t.status === "RUNNING" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
                         "text-rose-400 bg-rose-500/10 border-rose-500/20"
                       )}>{t.status}</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 text-[8px] font-mono tracking-widest mb-2">
+                    <div className="grid grid-cols-2 gap-4 text-[10px] font-mono tracking-widest mb-3 uppercase">
                       <span className="text-zinc-600">Delay: <span className={t.delay_minutes > 10 ? "text-rose-400" : "text-emerald-400"}>{t.delay_minutes} min</span></span>
                       <span className="text-zinc-600">Conf: <span className="text-cyan-400">{pred ? `${(pred.confidence * 100).toFixed(0)}%` : "—"}</span></span>
                     </div>
-                    <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                       <div className={cn("h-full rounded-full transition-all duration-700",
                         t.delay_minutes > 15 ? "bg-rose-500" : t.delay_minutes > 5 ? "bg-yellow-500" : "bg-emerald-500"
                       )} style={{ width: `${Math.min(100, (t.delay_minutes / 30) * 100)}%` }} />
@@ -257,22 +257,22 @@ export default function RealtimePage() {
           </div>
 
           {/* AI SIGNAL CONTROL MATRIX */}
-          <div className="glass-card p-5 rounded-2xl flex-col flex" style={{ borderColor: "rgba(16,185,129,0.1)" }}>
-            <h2 className="text-[9px] font-bold tracking-widest text-emerald-400 mb-3 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Neural Signal Matrix</span>
-              <span className="text-[7px] text-zinc-700 font-mono tracking-tighter">ML_ACTIVE</span>
+          <div className="glass-card p-6 rounded-2xl flex-col flex" style={{ borderColor: "rgba(16,185,129,0.1)" }}>
+            <h2 className="text-[11px] font-bold tracking-widest text-emerald-400 mb-4 flex items-center justify-between uppercase">
+              <span className="flex items-center gap-2"><Globe className="w-4 h-4" /> Neural Signal Matrix</span>
+              <span className="text-[8px] text-zinc-700 font-mono tracking-tighter">ML_ACTIVE_v4</span>
             </h2>
-            <div className="space-y-1.5 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
+            <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
               {(data?.signals || []).map((s: any) => (
-                <div key={s.id} className="flex items-center justify-between p-2.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-                  <span className="text-[8px] font-bold tracking-widest text-zinc-500 truncate max-w-[140px]">{s.station.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
-                  <div className="flex items-center gap-2">
-                    <div className={cn("w-2 h-2 rounded-full shadow-[0_0_8px]",
+                <div key={s.id} className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+                  <span className="text-[11px] font-bold tracking-widest text-zinc-500 truncate max-w-[140px] uppercase">{s.station.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-2.5 h-2.5 rounded-full shadow-[0_0_8px]",
                       s.state === "RED" ? "bg-rose-500 shadow-rose-500/50" :
                       s.state === "YELLOW" ? "bg-yellow-500 shadow-yellow-500/50 animate-pulse" :
                       "bg-emerald-500 shadow-emerald-500/50"
                     )} />
-                    <span className={cn("text-[7px] font-bold tracking-widest",
+                    <span className={cn("text-[9px] font-bold tracking-widest",
                       s.state === "RED" ? "text-rose-400" : s.state === "YELLOW" ? "text-yellow-400" : "text-emerald-400"
                     )}>{s.state}</span>
                   </div>

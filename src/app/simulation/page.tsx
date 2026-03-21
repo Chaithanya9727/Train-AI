@@ -169,11 +169,11 @@ export default function SimulationPage() {
             <FastForward className="w-5 h-5 text-orange-400" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight">
-              <span className="gradient-text">Module 01:</span>{" "}
-              <span className="text-zinc-200">AI Simulation</span>
+            <h1 className="text-lg font-bold tracking-tight">
+              <span className="gradient-text uppercase">Module 01:</span>{" "}
+              <span className="text-zinc-200 uppercase">AI Simulation</span>
             </h1>
-            <div className="flex items-center gap-2 text-[9px] font-bold tracking-[0.2em] text-zinc-600">
+            <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-zinc-600 uppercase">
               <span>Neural Digital Twin</span>
               <span className="text-zinc-800">•</span>
               <span className="text-orange-500/50 font-mono">SYNC_v5.4</span>
@@ -227,29 +227,29 @@ export default function SimulationPage() {
         <aside className="w-full xl:col-span-3 flex flex-col gap-3.5 xl:overflow-y-auto custom-scrollbar xl:pb-4 xl:pr-1">
 
           {/* ENGINE CONTROLS */}
-          <div className="glass-card p-5 rounded-2xl">
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Play className="w-3.5 h-3.5 text-orange-400" /> Core Propulsion</span>
-              <span className="px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-500 text-[7px] border border-orange-500/20">HYPER</span>
+          <div className="glass-card p-6 rounded-2xl">
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-5 flex items-center justify-between uppercase">
+              <span className="flex items-center gap-2"><Play className="w-4 h-4 text-orange-400" /> Core Propulsion</span>
+              <span className="px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-500 text-[9px] border border-orange-500/20 font-bold">HYPER_v2</span>
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <div className="flex justify-between text-[8px] font-bold tracking-widest text-zinc-600 mb-1">
+                <div className="flex justify-between text-[10px] font-bold tracking-widest text-zinc-600 mb-2 uppercase">
                   <span>Speed</span><span className="text-orange-400">{simSpeed}X</span>
                 </div>
                 <input type="range" min="1" max="10" value={simSpeed}
                   onChange={(e) => { setSimSpeed(parseInt(e.target.value)); send("SET_SPEED", { speed: parseInt(e.target.value) }); }}
-                  className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500" />
+                  className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500" />
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <button onClick={() => send("ADD_TRAIN")} className="btn-premium bg-zinc-950 border border-white/5 hover:border-orange-500/30 text-orange-400 justify-center">
-                  <PlusCircle className="w-3.5 h-3.5" /> Add
+              <div className="grid grid-cols-3 gap-2.5">
+                <button onClick={() => send("ADD_TRAIN")} className="btn-premium py-2 bg-zinc-950 border border-white/5 hover:border-orange-500/30 text-orange-400 justify-center text-[10px] font-bold">
+                  <PlusCircle className="w-4 h-4" /> Add
                 </button>
-                <button onClick={() => send("REMOVE_TRAIN")} className="btn-premium bg-zinc-950 border border-white/5 hover:border-rose-500/30 text-rose-400 justify-center">
-                  <MinusCircle className="w-3.5 h-3.5" /> Rem
+                <button onClick={() => send("REMOVE_TRAIN")} className="btn-premium py-2 bg-zinc-950 border border-white/5 hover:border-rose-500/30 text-rose-400 justify-center text-[10px] font-bold">
+                  <MinusCircle className="w-4 h-4" /> Rem
                 </button>
-                <button onClick={() => send("ADD_TRAIN", { emergency: true })} className="btn-premium bg-zinc-950 border border-white/5 hover:border-yellow-500/30 text-yellow-400 justify-center group">
-                  <Siren className="w-3.5 h-3.5 group-hover:animate-bounce" /> SOS
+                <button onClick={() => send("ADD_TRAIN", { emergency: true })} className="btn-premium py-2 bg-zinc-950 border border-white/5 hover:border-yellow-500/30 text-yellow-400 justify-center group text-[10px] font-bold">
+                  <Siren className="w-4 h-4 group-hover:animate-bounce" /> SOS
                 </button>
               </div>
             </div>
@@ -263,11 +263,11 @@ export default function SimulationPage() {
             <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-3 flex items-center gap-2">
               <WeatherIcon className={cn("w-3.5 h-3.5", weatherColor)} /> Weather Impact
             </h2>
-            <div className="grid grid-cols-2 gap-2 text-[8px] font-mono tracking-widest">
-              <div className="p-2.5 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1">State</span><span className={cn("font-bold text-sm", weatherColor)}>{weather.type || "CLEAR"}</span></div>
-              <div className="p-2.5 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1">Vis</span><span className="font-bold text-sm text-zinc-200">{weather.visibility_km || 10} km</span></div>
-              <div className="p-2.5 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1">Wind</span><span className="font-bold text-sm text-zinc-200">{weather.wind_speed || 5} km/h</span></div>
-              <div className="p-2.5 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1">Limit</span><span className={cn("font-bold text-sm", (weather.speed_multiplier || 1) < 0.5 ? "text-rose-400" : (weather.speed_multiplier || 1) < 0.8 ? "text-yellow-400" : "text-emerald-400")}>{((weather.speed_multiplier || 1) * 100).toFixed(0)}%</span></div>
+            <div className="grid grid-cols-2 gap-3 text-[10px] font-mono tracking-widest">
+              <div className="p-3 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1.5 uppercase text-[8px]">State</span><span className={cn("font-bold text-base", weatherColor)}>{weather.type || "CLEAR"}</span></div>
+              <div className="p-3 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1.5 uppercase text-[8px]">Vis</span><span className="font-bold text-base text-zinc-200">{weather.visibility_km || 10} km</span></div>
+              <div className="p-3 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1.5 uppercase text-[8px]">Wind</span><span className="font-bold text-base text-zinc-200">{weather.wind_speed || 5} km/h</span></div>
+              <div className="p-3 bg-black/30 rounded-xl border border-white/5"><span className="text-zinc-600 block mb-1.5 uppercase text-[8px]">Limit</span><span className={cn("font-bold text-base", (weather.speed_multiplier || 1) < 0.5 ? "text-rose-400" : (weather.speed_multiplier || 1) < 0.8 ? "text-yellow-400" : "text-emerald-400")}>{((weather.speed_multiplier || 1) * 100).toFixed(0)}%</span></div>
             </div>
           </div>
 
@@ -290,21 +290,21 @@ export default function SimulationPage() {
           </div>
 
           {/* SIGNALS */}
-          <div className="glass-card p-5 rounded-2xl">
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Automated Signals
+          <div className="glass-card p-6 rounded-2xl">
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center gap-2 uppercase">
+              <ShieldCheck className="w-4 h-4 text-cyan-400" /> Automated Signals
             </h2>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {signals.map((s: any) => (
-                <div key={s.id} className="flex items-center justify-between p-2.5 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-                  <span className="text-[8px] font-bold tracking-widest text-zinc-500 truncate max-w-[110px]">{s.station}</span>
-                  <div className="flex items-center gap-2">
+                <div key={s.id} className="flex items-center justify-between p-3 bg-black/30 rounded-xl border border-white/5 hover:border-white/10 transition-colors uppercase">
+                  <span className="text-[11px] font-bold tracking-widest text-zinc-500 truncate max-w-[110px]">{s.station}</span>
+                  <div className="flex items-center gap-3">
                     <div className={cn("w-2.5 h-2.5 rounded-full",
                       s.state === "RED" ? "bg-rose-500 shadow-[0_0_8px_#f43f5e]" :
                       s.state === "YELLOW" ? "bg-yellow-500 shadow-[0_0_8px_#eab308] animate-pulse" :
                       "bg-emerald-500 shadow-[0_0_8px_#10b981]"
                     )} />
-                    <span className={cn("text-[7px] font-bold tracking-widest",
+                    <span className={cn("text-[10px] font-bold tracking-widest",
                       s.state === "RED" ? "text-rose-400" : s.state === "YELLOW" ? "text-yellow-400" : "text-emerald-400"
                     )}>{s.state}</span>
                   </div>
@@ -318,16 +318,16 @@ export default function SimulationPage() {
             <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-3 flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-emerald-400" /> Live Telemetry
             </h2>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {[
                 { label: "Running",   value: stats?.running || 0,               color: "text-emerald-400" },
                 { label: "Stopped",   value: stats?.stopped || 0,               color: "text-rose-400" },
                 { label: "Delayed",   value: stats?.delayed || 0,               color: "text-yellow-400" },
                 { label: "Prevented", value: stats?.collisions_prevented || 0,  color: "text-cyan-400" },
               ].map(s => (
-                <div key={s.label} className="p-2.5 bg-black/30 rounded-xl border border-white/5 text-center">
-                  <div className={cn("text-xl font-bold", s.color)}>{s.value}</div>
-                  <div className="text-[7px] font-bold tracking-widest text-zinc-600">{s.label}</div>
+                <div key={s.label} className="p-3 bg-black/30 rounded-xl border border-white/5 text-center">
+                  <div className={cn("text-2xl font-bold mb-1", s.color)}>{s.value}</div>
+                  <div className="text-[10px] font-bold tracking-widest text-zinc-600 uppercase">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -348,34 +348,34 @@ export default function SimulationPage() {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 bg-black/30 rounded-xl border border-white/5 flex flex-col items-center">
-                  <Users className="w-3.5 h-3.5 text-fuchsia-400 mb-1" />
-                  <span className="text-xs font-bold text-fuchsia-400">{(stats?.total_passengers || 0).toLocaleString()}</span>
-                  <span className="text-[6px] text-zinc-600 font-bold">PAX</span>
+                <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex flex-col items-center">
+                  <Users className="w-4 h-4 text-fuchsia-400 mb-1.5" />
+                  <span className="text-sm font-bold text-fuchsia-400">{(stats?.total_passengers || 0).toLocaleString()}</span>
+                  <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">PAX</span>
                 </div>
-                <div className={cn("p-2.5 rounded-xl border flex flex-col items-center", ecoMode ? "bg-emerald-500/10 border-emerald-500/20" : "bg-black/30 border-white/5")}>
-                  <Zap className={cn("w-3.5 h-3.5 mb-1", ecoMode ? "text-emerald-400" : "text-zinc-600")} />
-                  <span className={cn("text-xs font-bold", ecoMode ? "text-emerald-400" : "text-zinc-600")}>{analytics?.eco_saved_kwh || 0}</span>
-                  <span className="text-[6px] text-zinc-600 font-bold">KWH</span>
+                <div className={cn("p-3 rounded-xl border flex flex-col items-center", ecoMode ? "bg-emerald-500/10 border-emerald-500/20" : "bg-black/30 border-white/5")}>
+                  <Zap className={cn("w-4 h-4 mb-1.5", ecoMode ? "text-emerald-400" : "text-zinc-600")} />
+                  <span className={cn("text-sm font-bold", ecoMode ? "text-emerald-400" : "text-zinc-600")}>{analytics?.eco_saved_kwh || 0}</span>
+                  <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">KWH</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* NEURAL SIGNAL MATRIX */}
-          <div className="glass-card p-5 rounded-2xl" style={{ borderColor: "rgba(245,158,11,0.1)" }}>
-            <h2 className="text-[9px] font-bold tracking-widest text-orange-400 mb-4 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Zap className="w-3.5 h-3.5" /> Neural Signal Matrix</span>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[7px] text-zinc-500 font-bold">Dynamic Sync</span>
+          <div className="glass-card p-6 rounded-2xl" style={{ borderColor: "rgba(245,158,11,0.1)" }}>
+            <h2 className="text-[11px] font-bold tracking-widest text-orange-400 mb-5 flex items-center justify-between uppercase">
+              <span className="flex items-center gap-2"><Zap className="w-4 h-4" /> Neural Signal Matrix</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[9px] text-zinc-500 font-bold tracking-widest uppercase">Dynamic Sync</span>
               </div>
             </h2>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               {data?.signals?.map((sig: any) => (
-                <div key={sig.id} className="flex items-center justify-between p-2.5 bg-black/40 rounded-xl border border-white/5 group hover:border-orange-500/20 transition-all">
-                  <span className="text-[8px] font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors truncate max-w-[70px]">{sig.station.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
-                  <div className={cn("w-2 h-2 rounded-full shadow-lg transition-all duration-500",
+                <div key={sig.id} className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-white/5 group hover:border-orange-500/20 transition-all uppercase">
+                  <span className="text-[10px] font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors truncate max-w-[70px]">{sig.station.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
+                  <div className={cn("w-2.5 h-2.5 rounded-full shadow-lg transition-all duration-500",
                     sig.state === "RED" ? "bg-rose-500 shadow-rose-500/50" :
                     sig.state === "YELLOW" ? "bg-amber-400 shadow-amber-400/50 animate-pulse" :
                     "bg-emerald-500 shadow-emerald-500/50"
@@ -389,22 +389,22 @@ export default function SimulationPage() {
           </div>
 
           {/* AI LOG */}
-          <div className="glass-card p-5 rounded-2xl flex-1 min-h-[350px] flex flex-col" style={{ borderColor: "rgba(249,115,22,0.1)" }}>
-            <h2 className="text-[9px] font-bold tracking-widest text-orange-400 mb-3 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Brain className="w-3.5 h-3.5 animate-pulse" /> AI Neural Log</span>
-              <span className="px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-500 text-[7px] border border-orange-500/20">Live Sync</span>
+          <div className="glass-card p-6 rounded-2xl flex-1 min-h-[350px] flex flex-col" style={{ borderColor: "rgba(249,115,22,0.1)" }}>
+            <h2 className="text-[11px] font-bold tracking-widest text-orange-400 mb-4 flex items-center justify-between uppercase">
+              <span className="flex items-center gap-2"><Brain className="w-4 h-4 animate-pulse" /> AI Neural Log</span>
+              <span className="px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-500 text-[10px] border border-orange-500/20 font-bold">Live Sync</span>
             </h2>
-            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1">
               {(analytics.ai_decisions || []).slice().reverse().map((d: any, i: number) => (
-                <div key={i} className="border-l-2 border-white/5 hover:border-orange-500/30 pl-3 py-1.5 rounded-r-lg transition-colors group">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className={cn("text-[7px] font-bold tracking-widest",
+                <div key={i} className="border-l-2 border-white/5 hover:border-orange-500/30 pl-4 py-2 rounded-r-lg transition-colors group">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={cn("text-[10px] font-bold tracking-widest uppercase",
                       d.action === "EMERGENCY_BRAKE" || d.action === "SIGNAL_SWITCH" ? "text-orange-400" :
                       d.action === "MODE_CHANGE" ? "text-emerald-400" : "text-zinc-600"
                     )}>{d.action}</span>
-                    <span className="text-[6px] text-zinc-700 font-mono">T{d.tick}</span>
+                    <span className="text-[9px] text-zinc-700 font-mono font-bold tracking-widest">T{d.tick}</span>
                   </div>
-                  <p className="text-[9px] text-zinc-500 leading-relaxed group-hover:text-zinc-300 transition-colors">{d.reason}</p>
+                  <p className="text-[11px] text-zinc-500 leading-relaxed group-hover:text-zinc-300 transition-colors font-bold tracking-tight">{d.reason}</p>
                 </div>
               ))}
               {(analytics.ai_decisions || []).length === 0 && (
@@ -417,20 +417,20 @@ export default function SimulationPage() {
           </div>
 
           {/* ALERTS */}
-          <div className="glass-card p-5 rounded-2xl">
-            <h2 className="text-[9px] font-bold tracking-widest text-zinc-400 mb-3 flex items-center gap-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-400" /> Active Risks
+          <div className="glass-card p-6 rounded-2xl">
+            <h2 className="text-[11px] font-bold tracking-widest text-zinc-400 mb-4 flex items-center gap-2 uppercase">
+              <AlertTriangle className="w-4 h-4 text-rose-400" /> Active Risks
             </h2>
-            <div className="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar">
+            <div className="space-y-2 max-h-36 overflow-y-auto custom-scrollbar">
               {alerts.length === 0 ? (
-                <div className="text-center py-5 text-[9px] text-zinc-700 font-bold tracking-widest flex flex-col items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 opacity-30" /> Sector Clear
+                <div className="text-center py-6 text-[11px] text-zinc-700 font-bold tracking-widest flex flex-col items-center gap-3 uppercase">
+                  <ShieldCheck className="w-6 h-6 opacity-30" /> Sector Clear
                 </div>
               ) : alerts.map((a: any, i: number) => (
-                <div key={i} className={cn("p-3 rounded-xl border text-[8px] font-bold tracking-widest flex items-start gap-2",
+                <div key={i} className={cn("p-4 rounded-xl border text-[10px] font-bold tracking-widest flex items-start gap-3 uppercase",
                   a.severity === "CRITICAL" ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"
                 )}>
-                  <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+                  <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
                   <span>{a.message}</span>
                 </div>
               ))}

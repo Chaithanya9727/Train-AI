@@ -22,17 +22,17 @@ export default function Home() {
               <Network className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="text-sm font-bold tracking-tight block leading-none">Train AI</span>
-              <span className="text-[8px] font-medium text-zinc-500 tracking-widest">Traffic Control</span>
+              <span className="text-sm md:text-base font-bold tracking-tight block leading-none">Train AI</span>
+              <span className="text-[10px] md:text-[11px] font-medium text-zinc-500 tracking-[0.3em] uppercase">Traffic Control</span>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="#about" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">About</Link>
-            <Link href="#how-it-works" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">How It Works</Link>
-            <Link href="#modules" className="text-xs font-bold text-zinc-400 hover:text-white transition-colors">Modules</Link>
+          <div className="hidden md:flex items-center gap-10">
+            <Link href="#about" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-wider">About</Link>
+            <Link href="#how-it-works" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-wider">How It Works</Link>
+            <Link href="#modules" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-wider">Modules</Link>
             <div className="h-4 w-px bg-white/10" />
             <Link href="/simulation">
-              <button className="px-5 py-2 bg-orange-500 text-black font-bold text-xs rounded-lg hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20">
+              <button className="px-6 py-2.5 bg-orange-500 text-black font-bold text-sm rounded-lg hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20 uppercase tracking-widest">
                 Launch App
               </button>
             </Link>
@@ -75,7 +75,7 @@ export default function Home() {
             <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 via-fuchsia-500 to-cyan-400">Safer Railways.</span>
           </h1>
 
-          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12">
+          <p className="text-zinc-400 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-16 font-medium">
             Train AI is an intelligent traffic control system that uses artificial intelligence 
             to manage railway signals, prevent collisions, predict delays, and optimize 
             train movements across the Indian Railway network in real time.
@@ -129,13 +129,13 @@ export default function Home() {
               <span className="text-orange-400">13,000+ trains daily.</span><br />
               Managing them is chaos.
             </h2>
-            <p className="text-zinc-400 text-base leading-relaxed mb-6">
+            <p className="text-zinc-300 text-lg md:text-xl leading-relaxed mb-8 font-medium">
               Signal failures, manual coordination errors, and unpredictable delays cost 
               the Indian Railways billions every year. Current systems rely heavily on 
               human operators making split-second decisions for thousands of trains 
               simultaneously.
             </p>
-            <p className="text-zinc-400 text-base leading-relaxed mb-8">
+            <p className="text-zinc-400 text-lg md:text-xl leading-relaxed mb-12">
               <span className="text-white font-bold">Train AI changes this.</span> Our platform uses artificial intelligence 
               to automatically control railway signals, detect potential collisions before 
               they happen, and predict delays with high accuracy — all without human intervention.
@@ -169,29 +169,29 @@ export default function Home() {
               <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Signal className="w-6 h-6 text-orange-400" />
               </div>
-              <h3 className="text-sm font-bold text-white mb-2 tracking-tight">Smart Signals</h3>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">AI reads traffic density and automatically sets signals to Green, Yellow, or Red to keep trains safe.</p>
+              <h3 className="text-lg font-bold text-white mb-3 tracking-tight">Smart Signals</h3>
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">AI reads traffic density and automatically sets signals to Green, Yellow, or Red to keep trains safe.</p>
             </div>
             <div className="glass-card p-7 rounded-3xl border-rose-500/10 hover:border-rose-500/20 transition-all group">
               <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <ShieldCheck className="w-6 h-6 text-rose-400" />
               </div>
-              <h3 className="text-sm font-bold text-white mb-2 tracking-tight">Collision Prevention</h3>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">Continuously monitors the distance between all trains and triggers emergency stops if a conflict is detected.</p>
+              <h3 className="text-lg font-bold text-white mb-3 tracking-tight">Collision Prevention</h3>
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">Continuously monitors the distance between all trains and triggers emergency stops if a conflict is detected.</p>
             </div>
             <div className="glass-card p-7 rounded-3xl border-cyan-500/10 hover:border-cyan-500/20 transition-all group">
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-6 h-6 text-cyan-400" />
               </div>
-              <h3 className="text-sm font-bold text-white mb-2 tracking-tight">Delay Prediction</h3>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">Machine learning models analyze patterns to forecast which trains will be delayed and by how many minutes.</p>
+              <h3 className="text-lg font-bold text-white mb-3 tracking-tight">Delay Prediction</h3>
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">Machine learning models analyze patterns to forecast which trains will be delayed and by how many minutes.</p>
             </div>
             <div className="glass-card p-7 rounded-3xl border-fuchsia-500/10 hover:border-fuchsia-500/20 transition-all group">
               <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <MapPin className="w-6 h-6 text-fuchsia-400" />
               </div>
-              <h3 className="text-sm font-bold text-white mb-2 tracking-tight">Live GPS Tracking</h3>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">Every station and train is plotted on a real-world map using OpenStreetMap for accurate geographic visualization.</p>
+              <h3 className="text-lg font-bold text-white mb-3 tracking-tight">Live GPS Tracking</h3>
+              <p className="text-xs text-zinc-500 leading-relaxed font-medium">Every station and train is plotted on a real-world map using OpenStreetMap for accurate geographic visualization.</p>
             </div>
           </motion.div>
         </div>
@@ -205,8 +205,8 @@ export default function Home() {
               <Layers className="w-3.5 h-3.5 text-fuchsia-400" />
               <span className="text-[10px] font-bold tracking-widest text-fuchsia-400">System Architecture</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">How Train AI Works</h2>
-            <p className="text-zinc-400 text-base max-w-2xl mx-auto leading-relaxed">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-8">How Train AI Works</h2>
+            <p className="text-zinc-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-medium">
               Our platform connects a Python AI backend with a Next.js frontend, 
               processing real-world railway data through three intelligent layers.
             </p>
@@ -271,13 +271,13 @@ export default function Home() {
                       <Monitor className="w-6 h-6 text-cyan-400" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold tracking-tight mb-4">Visual Command Center</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-medium">Everything is displayed on a beautiful dark-themed dashboard with an interactive Leaflet map, live signal matrix, delay charts, and an AI neural log showing every decision the system makes in real time.</p>
-                  <div className="space-y-3 pt-6 border-t border-white/5">
+                  <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Visual Command Center</h3>
+                  <p className="text-zinc-400 text-base leading-relaxed mb-8 font-medium">Everything is displayed on a beautiful dark-themed dashboard with an interactive Leaflet map, live signal matrix, delay charts, and an AI neural log showing every decision the system makes in real time.</p>
+                  <div className="space-y-4 pt-6 border-t border-white/5">
                     {["Interactive GIS map", "Real-time signal matrix", "Live AI decision log"].map((d, j) => (
                       <div key={j} className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                        <span className="text-xs text-zinc-500 font-medium">{d}</span>
+                        <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.5)]" />
+                        <span className="text-sm text-zinc-400 font-bold tracking-tight">{d}</span>
                       </div>
                     ))}
                   </div>
@@ -293,8 +293,8 @@ export default function Home() {
         <div className="glass-card p-10 md:p-14 rounded-[3rem] border-white/5">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-center">
             <div className="lg:col-span-2">
-              <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Built With Modern Tech</h3>
-              <p className="text-zinc-400 text-base leading-relaxed font-medium">
+              <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">Built With Modern Tech</h3>
+              <p className="text-zinc-400 text-lg md:text-xl leading-relaxed font-semibold">
                 A production-grade stack combining the best of web development and machine learning 
                 to deliver a responsive, real-time AI experience.
               </p>
